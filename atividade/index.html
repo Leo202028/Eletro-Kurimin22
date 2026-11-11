@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eletro Kurumin - Gestão de Stock de Componentes</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="js/auth.js"></script>
+  <script>
+    // Executa imediatamente para evitar cintilação da página se não estiver autenticado
+    Auth.protegerPagina();
+  </script>
+</head>
+<body>
+
+  <!-- Barra de Navegação Superior -->
+  <header class="navbar">
+    <div class="navbar-container">
+      <a href="index.html" class="brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+            <rect x="9" y="9" width="6" height="6"></rect>
+            <line x1="9" y1="1" x2="9" y2="4"></line>
+            <line x1="15" y1="1" x2="15" y2="4"></line>
+            <line x1="9" y1="20" x2="9" y2="23"></line>
+            <line x1="15" y1="20" x2="15" y2="23"></line>
+            <line x1="20" y1="9" x2="23" y2="9"></line>
+            <line x1="20" y1="14" x2="23" y2="14"></line>
+            <line x1="1" y1="9" x2="4" y2="9"></line>
+            <line x1="1" y1="14" x2="4" y2="14"></line>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">Eletro Kurumin</span>
+          <span class="brand-subtitle">Controlo de Stock</span>
+        </div>
+      </a>
+
+      <nav>
+        <ul class="nav-links">
+          <li>
+            <a href="index.html" class="nav-link active">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+              </svg>
+              Gestão de Componentes
+            </a>
+          </li>
+          <li>
+            <a href="relatorio.html" class="nav-link">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+              Relatório Detalhado
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="nav-user">
+        <div class="user-badge">
+          <div class="user-avatar" id="header-user-avatar">CP</div>
+          <span class="user-name" id="header-user-name">Carlos Pereira</span>
+        </div>
+        <button class="btn btn-secondary btn-sm btn-logout" title="Terminar sessão">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          Sair
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Conteúdo Principal -->
+  <main class="main-wrapper">
+
+    <!-- Cabeçalho da Página e Ações de Topo -->
+    <div class="page-header">
+      <div class="page-title">
+        <h1>Gestão de Componentes Eletrónicos</h1>
+        <p>Inventário em tempo real, registo e atualização de referências em armazém</p>
+      </div>
+      <div class="page-actions">
+        <button type="button" id="btn-restaurar-demo" class="btn btn-secondary" title="Repor stock original de demonstração">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="1 4 1 10 7 10"></polyline>
+            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+          </svg>
+          Repor Demo
+        </button>
+        <button type="button" id="btn-novo-componente" class="btn btn-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Novo Componente
+        </button>
+      </div>
+    </div>
+
+    <!-- Indicadores Rápidos (KPIs) -->
+    <section class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon blue">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-label">Total de Referências</span>
+          <span class="stat-value" id="stat-total-ref">0</span>
+          <span class="stat-sub">Modelos de componentes</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon blue">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line>
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-label">Total de Peças</span>
+          <span class="stat-value" id="stat-total-pecas">0</span>
+          <span class="stat-sub">Unidades físicas em armazém</span>
+        </div>
+      </div>
+
+      <div class="stat-card highlight-green">
+        <div class="stat-icon green">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="1" x2="12" y2="23"></line>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-label">Valor Total do Stock</span>
+          <span class="stat-value primary-highlight" id="stat-valor-total">0,00 €</span>
+          <span class="stat-sub">Soma de (Quantidade × Preço)</span>
+        </div>
+      </div>
+
+      <div class="stat-card highlight-amber">
+        <div class="stat-icon amber">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-label">Alerta de Stock Baixo</span>
+          <span class="stat-value" id="stat-stock-baixo" style="color: var(--color-amber);">0</span>
+          <span class="stat-sub">Componentes com ≤ 15 un.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cartão com Filtros e Tabela de Stock -->
+    <div class="card">
+      <div class="toolbar">
+        <div class="toolbar-filters">
+          <!-- Campo de Pesquisa em Tempo Real -->
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="input-pesquisa" placeholder="Pesquisar por código, nome ou localização...">
+          </div>
+
+          <!-- Filtro por Categoria -->
+          <select id="filtro-categoria" class="select-filter">
+            <option value="">Todas as Categorias</option>
+          </select>
+
+          <!-- Filtro por Nível de Stock -->
+          <select id="filtro-stock" class="select-filter">
+            <option value="">Todos os Níveis</option>
+            <option value="baixo">Apenas Stock Baixo (≤ 15 un.)</option>
+            <option value="normal">Stock Normal (&gt; 15 un.)</option>
+          </select>
+        </div>
+
+        <div style="font-size: 0.85rem; color: var(--color-text-muted);">
+          Atualização automática no navegador
+        </div>
+      </div>
+
+      <!-- Tabela de Componentes -->
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Código / Ref.</th>
+              <th>Designação do Componente</th>
+              <th>Categoria</th>
+              <th>Quantidade</th>
+              <th>Preço Unit.</th>
+              <th>Valor Total</th>
+              <th>Localização</th>
+              <th style="text-align: center;">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="stock-table-body">
+            <!-- As linhas são inseridas via JavaScript -->
+          </tbody>
+        </table>
+
+        <!-- Estado Vazio (Sem resultados) -->
+        <div id="empty-state" class="empty-state" style="display: none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="8" y1="12" x2="16" y2="12"></line>
+          </svg>
+          <h3>Nenhum componente encontrado</h3>
+          <p>Tente ajustar os termos de pesquisa ou os filtros aplicados.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Rodapé -->
+  <footer class="footer">
+    <div class="footer-content">
+      <span><strong>Eletro Kurumin</strong> — Sistema Integrado de Gestão de Armazém</span>
+      <span>Versão 1.0 (Produção) &bull; Desenvolvido em HTML5, CSS3 e JavaScript Puro</span>
+    </div>
+  </footer>
+
+  <!-- =========================================================================
+       MODAL 1: Registar / Editar Componente
+       ========================================================================= -->
+  <div class="modal-overlay" id="modal-componente">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="modal-titulo">Registar Novo Componente</h2>
+        <button type="button" class="modal-close" id="btn-fechar-modal" title="Fechar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <form id="form-componente">
+        <div class="modal-body">
+          <input type="hidden" id="comp-id">
+
+          <div class="form-grid">
+            <!-- Código / Referência -->
+            <div class="form-group">
+              <label class="form-label" for="comp-codigo">
+                Código / Referência <span class="required">*</span>
+              </label>
+              <input 
+                type="text" 
+                id="comp-codigo" 
+                class="form-input" 
+                placeholder="Ex: RES-10K-0805" 
+                required
+                autocomplete="off"
+              >
+              <span class="form-hint">Identificador único de armazém.</span>
+            </div>
+
+            <!-- Categoria -->
+            <div class="form-group">
+              <label class="form-label" for="comp-categoria">
+                Categoria <span class="required">*</span>
+              </label>
+              <select id="comp-categoria" class="form-select" required>
+                <option value="">Selecione uma categoria...</option>
+                <option value="Passivos">Passivos (Resistências, Condensadores, Indutores)</option>
+                <option value="Semicondutores">Semicondutores (Díodos, Transístores, FETs)</option>
+                <option value="Circuitos Integrados">Circuitos Integrados &amp; MCUs</option>
+                <option value="Sensores">Sensores e Transdutores</option>
+                <option value="Optoeletrónica">Optoeletrónica (LEDs, Displays, Acopladores)</option>
+                <option value="Eletromecânicos">Eletromecânicos (Relés, Interruptores)</option>
+                <option value="Conectores">Conectores, Bornes e Cabos</option>
+                <option value="Alimentação & Baterias">Alimentação &amp; Reguladores de Tensão</option>
+              </select>
+            </div>
+
+            <!-- Nome / Designação -->
+            <div class="form-group col-span-2">
+              <label class="form-label" for="comp-nome">
+                Designação do Componente <span class="required">*</span>
+              </label>
+              <input 
+                type="text" 
+                id="comp-nome" 
+                class="form-input" 
+                placeholder="Ex: Resistor SMD 10kΩ 1/8W 1%" 
+                required
+              >
+            </div>
+
+            <!-- Quantidade em Stock -->
+            <div class="form-group">
+              <label class="form-label" for="comp-quantidade">
+                Quantidade em Stock <span class="required">*</span>
+              </label>
+              <input 
+                type="number" 
+                id="comp-quantidade" 
+                class="form-input" 
+                placeholder="0" 
+                min="0" 
+                step="1" 
+                required
+              >
+              <span class="form-hint">Número inteiro não negativo (≥ 0).</span>
+            </div>
+
+            <!-- Preço Unitário -->
+            <div class="form-group">
+              <label class="form-label" for="comp-preco">
+                Preço Unitário (€) <span class="required">*</span>
+              </label>
+              <input 
+                type="number" 
+                id="comp-preco" 
+                class="form-input" 
+                placeholder="0.00" 
+                min="0.01" 
+                step="0.01" 
+                required
+              >
+              <span class="form-hint">Valor positivo estrito (&gt; 0,00 €).</span>
+            </div>
+
+            <!-- Localização no Armazém -->
+            <div class="form-group col-span-2">
+              <label class="form-label" for="comp-localizacao">
+                Localização no Armazém <span class="required">*</span>
+              </label>
+              <input 
+                type="text" 
+                id="comp-localizacao" 
+                class="form-input" 
+                placeholder="Ex: Gaveta A-01, Prateleira 3, Caixa B" 
+                required
+              >
+            </div>
+
+            <!-- Observações Técnicas -->
+            <div class="form-group col-span-2">
+              <label class="form-label" for="comp-descricao">Observações / Encapsulamento (Opcional)</label>
+              <textarea 
+                id="comp-descricao" 
+                class="form-textarea" 
+                rows="2" 
+                placeholder="Ex: Encapsulamento DIP-8, tolerância 1%, tensão máxima 50V..."
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="btn-cancelar-modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btn-guardar-componente">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <polyline points="17 21 17 13 7 13 7 21"></polyline>
+              <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
+            Guardar Componente
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 2: Confirmação de Eliminação
+       ========================================================================= -->
+  <div class="modal-overlay" id="modal-eliminar">
+    <div class="modal-card" style="max-width: 440px;">
+      <div class="modal-header">
+        <h2>Eliminar Componente</h2>
+        <button type="button" class="modal-close" id="btn-fechar-modal-eliminar" title="Fechar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p style="color: var(--color-text-main); margin-bottom: 0.85rem;">
+          Tem a certeza de que deseja eliminar o seguinte componente do inventário?
+        </p>
+        <div style="background-color: #fef2f2; border: 1px solid #fee2e2; padding: 0.85rem 1rem; border-radius: var(--radius-sm); margin-bottom: 1rem;">
+          <strong id="eliminar-comp-nome" style="color: var(--color-danger); display: block;">Nome do Componente</strong>
+          <span style="font-size: 0.85rem; color: var(--color-text-muted);">
+            Código: <code id="eliminar-comp-codigo" style="font-weight: 600;">COD-000</code>
+          </span>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--color-text-muted);">
+          Esta ação é irreversível e removerá o registo do armazém da Eletro Kurumin.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="btn-cancelar-eliminar">Cancelar</button>
+        <button type="button" class="btn btn-danger" id="btn-confirmar-eliminar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+          Sim, Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contentor para Notificações Flutuantes (Toasts) -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="js/storage.js"></script>
+  <script src="js/stock.js"></script>
+</body>
+</html>
+
